@@ -1,0 +1,6 @@
+framework module GCDWebsocketServer {
+  umbrella header "GCDWebsocketServer-umbrella.h"
+
+  export *
+  module * { export * }
+}

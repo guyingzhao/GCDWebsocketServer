@@ -1,0 +1,27 @@
+{
+  "name": "GCDWebsocketServer",
+  "version": "0.1.0",
+  "summary": "A simple websocket server based on GCDWebServer 3.0.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/guyingzhao/GCDWebsocketServer",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "guyingzhao": "572488191@qq.com"
+  },
+  "source": {
+    "git": "https://github.com/guyingzhao/GCDWebsocketServer.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "GCDWebsocketServer/Classes/**/*",
+  "dependencies": {
+    "GCDWebServer": [
+      "~> 3.0"
+    ]
+  }
+}

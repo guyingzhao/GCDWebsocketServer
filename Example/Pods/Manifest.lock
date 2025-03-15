@@ -1,0 +1,25 @@
+PODS:
+  - GCDWebServer (3.5.4):
+    - GCDWebServer/Core (= 3.5.4)
+  - GCDWebServer/Core (3.5.4)
+  - GCDWebsocketServer (0.1.0):
+    - GCDWebServer (~> 3.0)
+
+DEPENDENCIES:
+  - GCDWebsocketServer (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - GCDWebServer
+
+EXTERNAL SOURCES:
+  GCDWebsocketServer:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
+  GCDWebsocketServer: 5018e6ae8e223b069259c89963a5259780bbedd3
+
+PODFILE CHECKSUM: 5acf99d85bebb7a6ae14091582b2e39a8417dc9b
+
+COCOAPODS: 1.16.2
