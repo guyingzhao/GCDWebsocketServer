@@ -10,6 +10,10 @@
 #endif
 #endif
 
+#import "GCDWebsocketServer.h"
+#import "GCDWebsocketServerConnection.h"
+#import "GCDWebsocketServerHandler.h"
+#import "GCDWebsocketServerResponse.h"
 
 FOUNDATION_EXPORT double GCDWebsocketServerVersionNumber;
 FOUNDATION_EXPORT const unsigned char GCDWebsocketServerVersionString[];

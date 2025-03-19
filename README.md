@@ -1,15 +1,36 @@
 # GCDWebsocketServer
 
-[![CI Status](https://img.shields.io/travis/guyingzhao/GCDWebsocketServer.svg?style=flat)](https://travis-ci.org/guyingzhao/GCDWebsocketServer)
-[![Version](https://img.shields.io/cocoapods/v/GCDWebsocketServer.svg?style=flat)](https://cocoapods.org/pods/GCDWebsocketServer)
-[![License](https://img.shields.io/cocoapods/l/GCDWebsocketServer.svg?style=flat)](https://cocoapods.org/pods/GCDWebsocketServer)
-[![Platform](https://img.shields.io/cocoapods/p/GCDWebsocketServer.svg?style=flat)](https://cocoapods.org/pods/GCDWebsocketServer)
-
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
-## Requirements
+HTTP and Websocket can reuse the same path with no conflict.
+
+To add a websocket handler, use `addWebsocketHandlerForPath:withProcessBlock`.
+
+Usage:
+
+```objectivec
+
+
+-(void)SetupServer{
+    GCDWebsocketServer *server = [[GCDWebsocketServer alloc] init];
+    [server addWebsocketHandlerForPath:@"/" withProcessBlock:^GCDWebsocketServerHandler * _Nullable(GCDWebsocketServerConnection * _Nonnull conn) {
+        return [GCDWebsocketServerHandler handlerWithConn:conn];
+    }];
+    [server addHandlerForMethod:@"GET" path:@"/" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse * _Nullable(__kindof GCDWebServerRequest * _Nonnull request) {
+        return [GCDWebServerDataResponse responseWithText:@"ok\n"];
+    }];
+    NSDictionary *options = @{
+        GCDWebServerOption_Port: @(9999),
+    };
+    NSError *error;
+    [server startWithOptions:options error:&error];
+    if(error){
+        NSLog(@"start server failed for: %@", error);
+    }
+}
+```
 
 ## Installation
 

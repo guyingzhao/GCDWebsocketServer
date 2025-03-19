@@ -7,12 +7,30 @@
 //
 
 #import "GCDWEBSOCKETSERVERAppDelegate.h"
+#import "GCDWebsocketServer.h"
+#import "GCDWebsocketServerHandler.h"
+#import "GCDWebServer/GCDWebServerDataResponse.h"
 
 @implementation GCDWEBSOCKETSERVERAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    GCDWebsocketServer *server = [[GCDWebsocketServer alloc] init];
+    [server addWebsocketHandlerForPath:@"/" withProcessBlock:^GCDWebsocketServerHandler * _Nullable(GCDWebsocketServerConnection * _Nonnull conn) {
+        return [GCDWebsocketServerHandler handlerWithConn:conn];
+    }];
+    [server addHandlerForMethod:@"GET" path:@"/" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse * _Nullable(__kindof GCDWebServerRequest * _Nonnull request) {
+        return [GCDWebServerDataResponse responseWithText:@"ok\n"];
+    }];
+    NSDictionary *options = @{
+        GCDWebServerOption_Port: @(9999),
+    };
+    NSError *error;
+    [server startWithOptions:options error:&error];
+    if(error){
+        NSLog(@"start server failed for: %@", error);
+    }
     return YES;
 }
 
@@ -42,5 +60,4 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
-
 @end
