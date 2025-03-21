@@ -11,15 +11,6 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-typedef NS_ENUM(NSUInteger, WebSocketOpcode) {
-    OPCODE_CONTINUATION = 0x0,
-    OPCODE_TEXT = 0x1,
-    OPCODE_BINARY = 0x2,
-    OPCODE_CLOSE = 0x8,
-    OPCODE_PING = 0x9,
-    OPCODE_PONG = 0xA
-};
-
 // Constants
 static const NSUInteger FIN = 0x80;
 static const NSUInteger PAYLOAD_LEN = 0x7F;

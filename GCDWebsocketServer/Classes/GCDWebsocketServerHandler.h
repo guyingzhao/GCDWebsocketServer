@@ -10,6 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, WebSocketOpcode) {
+    OPCODE_CONTINUATION = 0x0,
+    OPCODE_TEXT = 0x1,
+    OPCODE_BINARY = 0x2,
+    OPCODE_CLOSE = 0x8,
+    OPCODE_PING = 0x9,
+    OPCODE_PONG = 0xA
+};
+
 @interface GCDWebsocketServerHandler : NSObject
 
 @property (nonnull, strong) GCDWebsocketServerConnection *conn;
@@ -31,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)onPong:(NSString*)msg;
 
 -(BOOL)handleMessage;
+
+-(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code masked:(BOOL)masked;
 
 @end
 
