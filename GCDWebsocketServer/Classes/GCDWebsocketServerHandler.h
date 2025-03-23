@@ -23,7 +23,11 @@ typedef NS_ENUM(NSUInteger, WebSocketOpcode) {
 
 @property (nonnull, strong) GCDWebsocketServerConnection *conn;
 
+@property (readonly, atomic) BOOL closed;
+
 +(instancetype)handlerWithConn:(GCDWebsocketServerConnection*)conn;
+
+-(void)close;
 
 -(void)onConnected;
 
@@ -42,6 +46,8 @@ typedef NS_ENUM(NSUInteger, WebSocketOpcode) {
 -(BOOL)handleMessage;
 
 -(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code masked:(BOOL)masked;
+
+-(void)sendText:(NSString*)text;
 
 @end
 

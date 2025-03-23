@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C69367D2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C69367C2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -38,6 +39,8 @@
 
 /* Begin PBXFileReference section */
 		32A2757ED4809C375F13C7E9 /* Pods-GCDWebsocketServer_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GCDWebsocketServer_Tests.release.xcconfig"; path = "Target Support Files/Pods-GCDWebsocketServer_Tests/Pods-GCDWebsocketServer_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		3C69367B2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWEBSOCKETSERVERHandler.h; sourceTree = "<group>"; };
+		3C69367C2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWEBSOCKETSERVERHandler.m; sourceTree = "<group>"; };
 		4E7B6D943B2FDB5F975DF1CA /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* GCDWebsocketServer_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GCDWebsocketServer_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -61,7 +64,7 @@
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		802C67C0B89CEC41D6D7CCAA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8EDEED3B597F1FCD5869643C /* GCDWebsocketServer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = GCDWebsocketServer.podspec; path = ../GCDWebsocketServer.podspec; sourceTree = "<group>"; };
+		8EDEED3B597F1FCD5869643C /* GCDWebsocketServer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = GCDWebsocketServer.podspec; path = ../GCDWebsocketServer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A402FD94659A71817F6C954B /* Pods_GCDWebsocketServer_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GCDWebsocketServer_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CED69BF3D8B72C711C4E8872 /* Pods_GCDWebsocketServer_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GCDWebsocketServer_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA1AB1F49A04987577AFA67C /* Pods-GCDWebsocketServer_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GCDWebsocketServer_Example.debug.xcconfig"; path = "Target Support Files/Pods-GCDWebsocketServer_Example/Pods-GCDWebsocketServer_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -151,6 +154,8 @@
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				3C69367B2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.h */,
+				3C69367C2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.m */,
 			);
 			name = "Example for GCDWebsocketServer";
 			path = GCDWebsocketServer;
@@ -370,6 +375,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C69367D2D8E4BE0001FD02B /* GCDWEBSOCKETSERVERHandler.m in Sources */,
 				6003F59E195388D20070C39A /* GCDWEBSOCKETSERVERAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* GCDWEBSOCKETSERVERViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,

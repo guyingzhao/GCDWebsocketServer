@@ -18,13 +18,14 @@
     // Override point for customization after application launch.
     GCDWebsocketServer *server = [[GCDWebsocketServer alloc] init];
     [server addWebsocketHandlerForPath:@"/" withProcessBlock:^GCDWebsocketServerHandler * _Nullable(GCDWebsocketServerConnection * _Nonnull conn) {
-        return [GCDWebsocketServerHandler handlerWithConn:conn];
+        return [GCDWEBSOCKETSERVERHandler handlerWithConn:conn];
     }];
     [server addHandlerForMethod:@"GET" path:@"/" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse * _Nullable(__kindof GCDWebServerRequest * _Nonnull request) {
         return [GCDWebServerDataResponse responseWithText:@"ok\n"];
     }];
     NSDictionary *options = @{
         GCDWebServerOption_Port: @(9999),
+        GCDWebServerOption_AutomaticallySuspendInBackground: @(NO)
     };
     NSError *error;
     [server startWithOptions:options error:&error];

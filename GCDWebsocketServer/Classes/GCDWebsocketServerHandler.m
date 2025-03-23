@@ -19,7 +19,7 @@ static const NSUInteger PAYLOAD_LEN_EXT64 = 0x7F;
 
 // Length thresholds
 static const NSUInteger LENGTH_7 = 0x7D;
-static const NSUInteger LENGTH_16 = 1 << 16;
+static const NSUInteger LENGTH_16 = (1 << 16);
 static const NSUInteger LENGTH_63 = 1 << 63;
 
 static const NSUInteger OPCODE_MASK = 0x0F;
@@ -35,7 +35,15 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
     return handler;
 }
 
+-(instancetype)init{
+    _closed = NO;
+    return [super init];
+}
+
 -(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code masked:(BOOL)masked{
+    if(_closed){
+        return;
+    }
     NSUInteger payloadLength = data.length;
     NSMutableData *frame = [NSMutableData data];
     
@@ -43,11 +51,11 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
     uint8_t firstByte = FIN | code;
     [frame appendBytes:&firstByte length:1];
     // Payload length handling
-    if (payloadLength <= LENGTH_7) {
+    if (payloadLength < LENGTH_7) {
         uint8_t lenByte = masked ? MASKED_MASK | payloadLength : payloadLength;
         [frame appendBytes:&lenByte length:1];
     }
-    else if (payloadLength <= LENGTH_16) {
+    else if (payloadLength < LENGTH_16) {
         uint8_t lenByte = masked ? MASKED_MASK | PAYLOAD_LEN_EXT16 : PAYLOAD_LEN_EXT16;
         [frame appendBytes:&lenByte length:1];
         
@@ -68,16 +76,20 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
     if (masked) {
         // Generate 4-byte mask key
         uint8_t maskKey[4];
+        uint8_t* maskKeyPtr = maskKey;
         arc4random_buf(maskKey, 4);
         [frame appendBytes:maskKey length:4];
         
         // Apply mask to payload
-        NSMutableData *maskedPayload = [data mutableCopy];
-        uint8_t *bytes = maskedPayload.mutableBytes;
-        for (NSUInteger i = 0; i < payloadLength; i++) {
-            bytes[i] ^= maskKey[i % 4];
-        }
-        [frame appendData:maskedPayload];
+        uint8_t *buf = (uint8_t*)malloc(payloadLength);
+        [data enumerateByteRangesUsingBlock:^(const void * _Nonnull ptr, NSRange byteRange, BOOL * _Nonnull stop) {
+            for(NSUInteger i=0; i<byteRange.length; i++){
+                NSUInteger offset = i + byteRange.location;
+                buf[offset] = ((uint8_t*)ptr)[i] ^ maskKeyPtr[offset%4];
+            }
+        }];
+        [frame appendBytes:buf length:data.length];
+        free(buf);
     } else {
         [frame appendData:data];
     }
@@ -101,14 +113,15 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
         if(err){
             return err;
         }
-        payloadLength = CFSwapInt16BigToHost(*(uint16_t*)data.mutableBytes);
+        payloadLength = CFSwapInt16BigToHost(*((uint16_t*)(data.bytes)));
     } else if (payloadLength == 127) {
         err = [conn readBytes:data withLength:8];
         if(err){
             return err;
         }
-        payloadLength = (NSUInteger)CFSwapInt64BigToHost(*(uint64_t*)data.mutableBytes);
+        payloadLength = (NSUInteger)CFSwapInt64BigToHost(*((uint64_t*)(data.bytes)));
     }
+    NSLog(@"going to recv %lu bytes payload", payloadLength);
     
     // reading mask
     data = [NSMutableData data];
@@ -117,6 +130,7 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
         return err;
     }
     uint8_t maskBytes[4] = {0};
+    uint8_t* maskBytesPtr = maskBytes;
     [data getBytes:maskBytes length:4];
     
     // reading payload and decode
@@ -125,12 +139,19 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
     if(err){
         return err;
     }
-    NSMutableData *body = [NSMutableData dataWithLength:payloadLength];
-    uint8_t *bytes = body.mutableBytes;
-    for(NSUInteger i=0; i<payloadLength; i++){
-        bytes[i] = ((uint8_t*)data.mutableBytes)[i] ^ maskBytes[i%4];
-    }
+    uint8_t *buf = (uint8_t*)malloc(payloadLength);
+    [data enumerateByteRangesUsingBlock:^(const void * _Nonnull bytes, NSRange byteRange, BOOL * _Nonnull stop) {
+        for(NSUInteger i=0; i<byteRange.length; i++){
+            NSUInteger offset = i + byteRange.location;
+            buf[offset] = ((uint8_t*)bytes)[i] ^ maskBytesPtr[offset%4];
+        }
+    }];
+    NSData *body = [NSData dataWithBytes:buf length:payloadLength];
+    free(buf);
     if(code == OPCODE_TEXT){
+        NSString *text = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
+        [self onText:text];
+    } else if(code == OPCODE_BINARY){
         [self onData:body];
     } else if(code == OPCODE_PING){
         [self onPing:[[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding]];
@@ -155,7 +176,7 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
             NSLog(@"websocket's socket closed by client");
             return NO;
         }
-        char *bytes = (char*)[data bytes];
+        uint8_t *bytes = (uint8_t*)[data bytes];
         uint8_t b1 = (uint8_t)(bytes[0]);
         uint8_t b2 = (uint8_t)(bytes[1]);
         WebSocketOpcode code = b1 & OPCODE_MASK;
@@ -168,11 +189,15 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
         NSUInteger payloadLength = b2 & PAYLOAD_LEN_MASK;
         switch (code) {
             case OPCODE_CLOSE:
-                NSLog(@"client actively closed websocket");
+                if(!_closed){
+                    NSLog(@"client actively closed websocket");
+                    [self sendClose];
+                }
                 return NO;
             case OPCODE_PING:
             case OPCODE_PONG:
             case OPCODE_TEXT:
+            case OPCODE_BINARY:
                 break;
             default:
                 [self onError:[NSError errorWithDomain:@"Websocket" code:-1 userInfo:@{@"error": [NSString stringWithFormat:@"unexpected opcode: %lu", code]}]];
@@ -213,6 +238,18 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
 
 -(void)onPong:(NSString*)msg{
     // nothing to do
+}
+
+
+-(void)sendClose{
+    uint16_t status = CFSwapInt16BigToHost((uint16_t)1000);
+    [self sendData:[NSData dataWithBytes:&status length:sizeof(status)] opcode:OPCODE_CLOSE masked:YES];
+}
+
+
+-(void)close{
+    _closed = YES;
+    [self sendClose];
 }
 
 @end

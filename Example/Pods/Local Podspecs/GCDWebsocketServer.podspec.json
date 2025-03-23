@@ -1,8 +1,8 @@
 {
   "name": "GCDWebsocketServer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "summary": "A simple websocket server based on GCDWebServer 3.0.",
-  "description": "TODO: Add long description of the pod here.",
+  "description": "GCDWebsocketServer is a simple websocket server based on GCDWebServer.\nYou can implement http and ws handlers in a single server, even with the same path.",
   "homepage": "https://github.com/guyingzhao/GCDWebsocketServer",
   "license": {
     "type": "MIT",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/guyingzhao/GCDWebsocketServer.git",
-    "tag": "0.1.0"
+    "tag": "0.1.1"
   },
   "platforms": {
     "ios": "10.0"

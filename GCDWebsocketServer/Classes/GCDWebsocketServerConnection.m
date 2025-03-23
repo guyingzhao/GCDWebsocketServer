@@ -76,54 +76,47 @@
 }
 
 - (NSError*)readBytes:(NSMutableData*)data withLength:(size_t)length{
-    __block NSError *err = nil;
-    NSNumber *priorityNum = (NSNumber*)[self.server valueForKey:@"dispatchQueuePriority"];
-    intptr_t priority = (intptr_t)[priorityNum longValue];
-    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-    dispatch_queue_global_t queue =dispatch_get_global_queue(priority, 0);
-    dispatch_read(_wsSocket, length, queue, ^(dispatch_data_t buffer, int error) {
-        @autoreleasepool {
-            if (error == 0) {
-                size_t size = dispatch_data_get_size(buffer);
-                if (size > 0) {
-                    dispatch_data_apply(buffer, ^bool(dispatch_data_t region, size_t chunkOffset, const void* chunkBytes, size_t chunkSize) {
-                        [data appendBytes:chunkBytes length:chunkSize];
-                        return YES;
-                    });
-                }
-            } else {
-                NSString *msg = [NSString stringWithFormat:@"%s", strerror(error)];
-                err = [NSError errorWithDomain:@"Socket" code:-1 userInfo:@{@"reason": msg}];
-            }
+    size_t count = 0;
+    uint8_t *buf = (uint8_t*)malloc(length);
+    NSError *err = nil;
+    while(count < length){
+        size_t temp = read(_wsSocket, buf + count, length - count);
+        if(temp == 0){
+            break;
         }
-        dispatch_semaphore_signal(sem);
-    });
-    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, 30 * 1e9));
+        if(temp < 0){
+            NSString *msg = [NSString stringWithFormat:@"read socket %d failed: %s", _wsSocket, strerror((int)temp)];
+            err = [NSError errorWithDomain:@"Socket" code:1 userInfo:@{@"error": msg}];
+        }
+        count += temp;
+    }
+    [data appendBytes:buf length:length];
+    free(buf);
     return err;
 }
 
-- (NSError*)sendBytes:(NSData*)data{
-    NSNumber *priorityNum = (NSNumber*)[self.server valueForKey:@"dispatchQueuePriority"];
-    intptr_t priority = (intptr_t)[priorityNum longValue];
-    dispatch_data_t buffer = dispatch_data_create(data.bytes, data.length, dispatch_get_global_queue(priority, 0), ^{
-      [data self];  // Keeps ARC from releasing data too early
-    });
-    __block NSError *err = nil;
-    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-    dispatch_write(_wsSocket, buffer, dispatch_get_global_queue(priority, 0), ^(dispatch_data_t remainingData, int error) {
-        @autoreleasepool {
-            if (error == 0) {
-                if(remainingData != NULL){
-                    err = [NSError errorWithDomain:@"Socket" code:-1 userInfo:@{@"reason": @"unexpected bytes left"}];
-                }
-            } else {
-                NSString *msg = [NSString stringWithFormat:@"%s", strerror(error)];
-                err = [NSError errorWithDomain:@"Socket" code:-1 userInfo:@{@"reason": msg}];
-            }
+- (NSError*)_sendBytes:(char*)ptr length:(NSUInteger)length{
+    size_t count = 0;
+    NSError *err = nil;
+    while(count < length){
+        size_t temp = write(_wsSocket, ptr + count, length - count);
+        if(temp == 0){
+            break;
         }
-        dispatch_semaphore_signal(sem);
-    });
-    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, 30 * 1e9));
+        if(temp < 0){
+            NSString *msg = [NSString stringWithFormat:@"write socket %d failed: %s", _wsSocket, strerror((int)temp)];
+            err = [NSError errorWithDomain:@"Socket" code:1 userInfo:@{@"error": msg}];
+        }
+        count += temp;
+    }
     return err;
+}
+
+-(NSError*)sendBytes:(NSData *)bytes{
+    __block NSError *error = nil;
+    [bytes enumerateByteRangesUsingBlock:^(const void * _Nonnull ptr, NSRange byteRange, BOOL * _Nonnull stop) {
+        [self _sendBytes:(char*)ptr length:byteRange.length];
+    }];
+    return error;
 }
 @end
