@@ -11,7 +11,7 @@
 @implementation GCDWEBSOCKETSERVERHandler
 
 -(void)onData:(NSData *)data{
-    [self sendData:data opcode:OPCODE_BINARY masked:YES];
+    [self sendData:data opcode:OPCODE_BINARY];
 }
 
 -(void)onText:(NSString *)text{

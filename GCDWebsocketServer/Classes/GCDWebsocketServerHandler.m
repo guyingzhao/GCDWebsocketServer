@@ -40,10 +40,11 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
     return [super init];
 }
 
--(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code masked:(BOOL)masked{
+-(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code{
     if(_closed){
         return;
     }
+    BOOL masked = NO;
     NSUInteger payloadLength = data.length;
     NSMutableData *frame = [NSMutableData data];
     
@@ -100,7 +101,7 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
 }
 
 -(void)sendText:(NSString*)text{
-    [self sendData:[text dataUsingEncoding:NSUTF8StringEncoding] opcode:OPCODE_TEXT masked:YES];
+    [self sendData:[text dataUsingEncoding:NSUTF8StringEncoding] opcode:OPCODE_TEXT];
 }
 
 -(NSError*)handleMessageWithCode:(WebSocketOpcode)code length:(NSUInteger)payloadLength{
@@ -121,7 +122,6 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
         }
         payloadLength = (NSUInteger)CFSwapInt64BigToHost(*((uint64_t*)(data.bytes)));
     }
-    NSLog(@"going to recv %lu bytes payload", payloadLength);
     
     // reading mask
     data = [NSMutableData data];
@@ -233,7 +233,7 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
 }
 
 -(void)onPing:(NSString*)msg{
-    [self sendData:[msg dataUsingEncoding:NSUTF8StringEncoding] opcode:OPCODE_PONG masked:YES];
+    [self sendData:[msg dataUsingEncoding:NSUTF8StringEncoding] opcode:OPCODE_PONG];
 }
 
 -(void)onPong:(NSString*)msg{
@@ -243,7 +243,7 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
 
 -(void)sendClose{
     uint16_t status = CFSwapInt16BigToHost((uint16_t)1000);
-    [self sendData:[NSData dataWithBytes:&status length:sizeof(status)] opcode:OPCODE_CLOSE masked:YES];
+    [self sendData:[NSData dataWithBytes:&status length:sizeof(status)] opcode:OPCODE_CLOSE];
 }
 
 

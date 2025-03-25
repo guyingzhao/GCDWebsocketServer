@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, WebSocketOpcode) {
 
 -(BOOL)handleMessage;
 
--(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code masked:(BOOL)masked;
+-(void)sendData:(NSData*)data opcode:(WebSocketOpcode)code;
 
 -(void)sendText:(NSString*)text;
 
