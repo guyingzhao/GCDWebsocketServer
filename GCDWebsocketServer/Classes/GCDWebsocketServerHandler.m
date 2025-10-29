@@ -192,6 +192,7 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
                 if(!_closed){
                     NSLog(@"client actively closed websocket");
                     [self sendClose];
+                    _closed = YES;
                 }
                 return NO;
             case OPCODE_PING:
@@ -248,7 +249,6 @@ static const NSUInteger PAYLOAD_LEN_MASK = 0x7F;
 
 
 -(void)close{
-    _closed = YES;
     [self sendClose];
 }
 
