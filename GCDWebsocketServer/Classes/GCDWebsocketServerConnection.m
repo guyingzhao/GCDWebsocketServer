@@ -72,11 +72,12 @@
     [rsp setValue:@"websocket" forAdditionalHeader:@"Upgrade"];
     [rsp setValue:@"Upgrade" forAdditionalHeader:@"Connection" ];
     [rsp setValue:acceptKey forAdditionalHeader:@"Sec-WebSocket-Accept"];
+    SEL sel = NSSelectorFromString(@"_endBackgroundTask");
     if([[NSThread currentThread] isMainThread]){
-        [self.server performSelector:@selector(_endBackgroundTask)];
+        [self.server performSelector:sel];
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^(void){
-            [self.server performSelector:@selector(_endBackgroundTask)];
+            [self.server performSelector:sel];
         });
     }
     

@@ -13,14 +13,14 @@
 
 // Constants
 static const NSUInteger FIN = 0x80;
-static const NSUInteger PAYLOAD_LEN = 0x7F;
+// static const NSUInteger PAYLOAD_LEN = 0x7F;
 static const NSUInteger PAYLOAD_LEN_EXT16 = 0x7E;
 static const NSUInteger PAYLOAD_LEN_EXT64 = 0x7F;
 
 // Length thresholds
 static const NSUInteger LENGTH_7 = 0x7D;
 static const NSUInteger LENGTH_16 = (1 << 16);
-static const NSUInteger LENGTH_63 = 1 << 63;
+#define LENGTH_63  ((1ULL<<63) - 1)
 
 static const NSUInteger OPCODE_MASK = 0x0F;
 static const NSUInteger MASKED_MASK = 0x80;
