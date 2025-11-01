@@ -18,7 +18,7 @@ static const NSUInteger PAYLOAD_LEN_EXT16 = 0x7E;
 static const NSUInteger PAYLOAD_LEN_EXT64 = 0x7F;
 
 // Length thresholds
-static const NSUInteger LENGTH_7 = 0x7D;
+static const NSUInteger LENGTH_7 = 0x7E;
 static const NSUInteger LENGTH_16 = (1 << 16);
 #define LENGTH_63  ((1ULL<<63) - 1)
 
